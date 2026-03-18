@@ -1,0 +1,49 @@
+import uuid
+from django.db import models
+
+
+class StoryOrder(models.Model):
+    class Status(models.TextChoices):
+        PENDING_PAYMENT = 'pending_payment'
+        PAID = 'paid'
+        GENERATING = 'generating'
+        COMPLETED = 'completed'
+        FAILED = 'failed'
+
+    class Gender(models.TextChoices):
+        BOY = 'boy', 'ولد'
+        GIRL = 'girl', 'بنت'
+
+    WISH_CHOICES = [
+        ('brave', 'شجاع'),
+        ('kind', 'طيب القلب'),
+        ('smart', 'ذكي'),
+        ('curious', 'فضولي ومحب للاكتشاف'),
+        ('strong', 'قوي'),
+    ]
+
+    THEME_CHOICES = [
+        ('adventure', 'مغامرة في الغابة'),
+        ('magic', 'عالم سحري'),
+        ('animals', 'مملكة الحيوانات'),
+        ('space', 'رحلة إلى الفضاء'),
+        ('ocean', 'أعماق البحر'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    child_name = models.CharField(max_length=100)
+    child_age = models.IntegerField()
+    child_gender = models.CharField(max_length=10, choices=Gender.choices)
+    favorite_animal = models.CharField(max_length=100)
+    wish = models.CharField(max_length=50, choices=WISH_CHOICES)
+    theme = models.CharField(max_length=50, choices=THEME_CHOICES)
+    stripe_payment_intent_id = models.CharField(max_length=255, blank=True)
+    story_text = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Story for {self.child_name} ({self.status})"
