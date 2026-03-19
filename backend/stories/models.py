@@ -48,8 +48,28 @@ class StoryOrder(models.Model):
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    illustrations_status = models.CharField(
+        max_length=20,
+        choices=[('pending', 'Pending'), ('generating', 'Generating'), ('completed', 'Completed'), ('failed', 'Failed')],
+        default='pending',
+    )
+
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
         return f"Story for {self.child_name} ({self.status})"
+
+
+class StoryIllustration(models.Model):
+    story = models.ForeignKey(StoryOrder, on_delete=models.CASCADE, related_name='illustrations')
+    scene_index = models.IntegerField()
+    scene_description = models.TextField()
+    image = models.ImageField(upload_to='story_illustrations/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['scene_index']
+
+    def __str__(self):
+        return f"Illustration {self.scene_index} for {self.story_id}"

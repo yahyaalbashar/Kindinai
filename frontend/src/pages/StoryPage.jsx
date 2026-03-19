@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import api from '../api'
 import LoadingAnimation from '../components/LoadingAnimation'
 import AudioPlayer from '../components/AudioPlayer'
+import StoryIllustrations from '../components/StoryIllustrations'
 
 function StoryPage() {
   const { id } = useParams()
@@ -103,9 +104,18 @@ function StoryPage() {
           </div>
         </div>
 
-        {/* Audio Player - hidden on print */}
-        <div className="no-print mb-6">
+        {/* Audio Player - disabled until better TTS provider is integrated */}
+        {/* <div className="no-print mb-6">
           <AudioPlayer orderId={id} audioUrl={story.audio_url} audioStatus={story.audio_status} />
+        </div> */}
+
+        {/* Illustrations */}
+        <div className="no-print mb-6">
+          <StoryIllustrations
+            orderId={id}
+            illustrations={story.illustrations}
+            illustrationsStatus={story.illustrations_status}
+          />
         </div>
 
         {/* Story card */}

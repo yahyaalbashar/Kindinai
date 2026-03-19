@@ -62,3 +62,48 @@ def generate_story(order):
     )
 
     return message.content[0].text
+
+
+SCENE_EXTRACTION_PROMPT = """
+You are given an Arabic children's bedtime story. Extract exactly 4 key visual scenes from the story.
+
+For each scene, write a short English description (1-2 sentences) that describes the visual setting, characters, and action. These descriptions will be used to generate children's book illustrations.
+
+Important:
+- Describe the child character's appearance consistently (age, gender, clothing)
+- Include the setting/environment details
+- Mention the animal character if present in the scene
+- Keep descriptions visual and concrete, not abstract
+- Do NOT include any Arabic text
+
+Return ONLY the 4 descriptions, one per line, numbered 1-4. No other text.
+""".strip()
+
+
+def extract_scene_descriptions(story_text, order):
+    """Extract 4 key scene descriptions from a story for illustration."""
+    client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
+
+    gender = "boy" if order.child_gender == 'boy' else "girl"
+    context = f"The main character is a {order.child_age}-year-old {gender} named {order.child_name}. Their favorite animal is a {order.favorite_animal}."
+
+    message = client.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=1024,
+        system=SCENE_EXTRACTION_PROMPT,
+        messages=[
+            {"role": "user", "content": f"{context}\n\nStory:\n{story_text}"}
+        ],
+    )
+
+    lines = message.content[0].text.strip().split('\n')
+    scenes = []
+    for line in lines:
+        line = line.strip()
+        if line and line[0].isdigit():
+            # Remove numbering like "1. " or "1) "
+            line = line.lstrip('0123456789').lstrip('.').lstrip(')').strip()
+        if line:
+            scenes.append(line)
+
+    return scenes[:4]
