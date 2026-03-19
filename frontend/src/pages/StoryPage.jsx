@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../api'
 import LoadingAnimation from '../components/LoadingAnimation'
@@ -11,12 +11,16 @@ function StoryPage() {
   const [copied, setCopied] = useState(false)
   const pollRef = useRef(null)
 
+  // Book flip state
+  const [currentPage, setCurrentPage] = useState(0)
+  const [animatingPage, setAnimatingPage] = useState(null)
+  const [animatingDir, setAnimatingDir] = useState(null)
+
   useEffect(() => {
     const fetchStory = async () => {
       try {
         const response = await api.get(`/api/story/${id}/`)
         setStory(response.data)
-
         if (response.data.status === 'completed' || response.data.status === 'failed') {
           clearInterval(pollRef.current)
         }
@@ -25,17 +29,14 @@ function StoryPage() {
         clearInterval(pollRef.current)
       }
     }
-
     fetchStory()
     pollRef.current = setInterval(fetchStory, 2000)
-
     return () => clearInterval(pollRef.current)
   }, [id])
 
-  // Split story into paragraphs and group illustrations by paragraph
+  // Split story into paragraphs and group illustrations
   const { paragraphs, illustrationsByParagraph } = useMemo(() => {
     if (!story?.story_text) return { paragraphs: [], illustrationsByParagraph: {} }
-
     const paras = story.story_text.split('\n\n').filter(p => p.trim())
     const illMap = {}
     if (story.illustrations?.length) {
@@ -48,6 +49,69 @@ function StoryPage() {
     return { paragraphs: paras, illustrationsByParagraph: illMap }
   }, [story?.story_text, story?.illustrations])
 
+  // Build ordered book pages: cover → paragraphs → end
+  const bookPages = useMemo(() => {
+    const pages = [{ type: 'cover' }]
+    paragraphs.forEach((para, idx) => {
+      pages.push({
+        type: 'content',
+        text: para.trim(),
+        illustrations: illustrationsByParagraph[idx] || [],
+        pageNumber: idx + 1,
+      })
+    })
+    pages.push({ type: 'end' })
+    return pages
+  }, [paragraphs, illustrationsByParagraph])
+
+  const totalPages = bookPages.length
+
+  const flipForward = useCallback(() => {
+    if (animatingPage !== null || currentPage >= totalPages - 1) return
+    const page = currentPage
+    setAnimatingPage(page)
+    setAnimatingDir('forward')
+    setTimeout(() => {
+      setCurrentPage(page + 1)
+      setAnimatingPage(null)
+      setAnimatingDir(null)
+    }, 700)
+  }, [animatingPage, currentPage, totalPages])
+
+  const flipBack = useCallback(() => {
+    if (animatingPage !== null || currentPage <= 0) return
+    const page = currentPage - 1
+    setAnimatingPage(page)
+    setAnimatingDir('backward')
+    setTimeout(() => {
+      setCurrentPage(page)
+      setAnimatingPage(null)
+      setAnimatingDir(null)
+    }, 700)
+  }, [animatingPage, currentPage])
+
+  const isPageTurned = (i) => {
+    if (animatingDir === 'forward' && i === animatingPage) return true
+    if (animatingDir === 'backward' && i === animatingPage) return false
+    return i < currentPage
+  }
+
+  const getPageZIndex = (i) => {
+    if (i === animatingPage) return totalPages * 3
+    if (i < currentPage) return i
+    return totalPages * 2 - i
+  }
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'ArrowLeft') flipForward()
+      if (e.key === 'ArrowRight') flipBack()
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [flipForward, flipBack])
+
   const handleCopy = async () => {
     if (story?.story_text) {
       await navigator.clipboard.writeText(story.story_text)
@@ -56,10 +120,65 @@ function StoryPage() {
     }
   }
 
-  const handlePrint = () => {
-    window.print()
+  const renderPageContent = (page) => {
+    if (page.type === 'cover') {
+      return (
+        <div className="book-page-inner cover-inner">
+          <div className="cover-ornament top-ornament">✦ ✦ ✦</div>
+          <div className="cover-icon">📖</div>
+          <h1 className="font-amiri cover-title">
+            قصة {story.child_name}
+          </h1>
+          <div className="cover-divider"></div>
+          <p className="cover-hint">اضغط لفتح الكتاب</p>
+          <div className="cover-ornament bottom-ornament">✦ ✦ ✦</div>
+        </div>
+      )
+    }
+
+    if (page.type === 'end') {
+      return (
+        <div className="book-page-inner end-inner">
+          <div className="cover-divider"></div>
+          <span className="font-amiri end-text">✨ النهاية ✨</span>
+          <div className="cover-divider"></div>
+        </div>
+      )
+    }
+
+    // Content page with optional illustrations
+    const hasImages = page.illustrations.length > 0
+
+    return (
+      <div className="book-page-inner content-inner">
+        {hasImages ? (
+          <>
+            <div className="page-illustrations">
+              {page.illustrations.map((ill, idx) => (
+                <img
+                  key={idx}
+                  src={ill.image_url}
+                  alt="رسمة من القصة"
+                  className="page-ill-img"
+                  loading="lazy"
+                />
+              ))}
+            </div>
+            <div className="page-text">
+              <p className="font-amiri text-content">{page.text}</p>
+            </div>
+          </>
+        ) : (
+          <div className="page-text-full">
+            <p className="font-amiri text-content">{page.text}</p>
+          </div>
+        )}
+        <div className="page-number">{page.pageNumber}</div>
+      </div>
+    )
   }
 
+  // Error / loading states
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
@@ -100,7 +219,7 @@ function StoryPage() {
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Actions bar - hidden on print */}
+        {/* Actions bar */}
         <div className="no-print flex items-center justify-between mb-6">
           <Link to="/" className="text-sage hover:text-forest transition-colors">
             ← الرئيسية
@@ -113,7 +232,7 @@ function StoryPage() {
               {copied ? '✓ تم النسخ!' : '📋 نسخ القصة'}
             </button>
             <button
-              onClick={handlePrint}
+              onClick={() => window.print()}
               className="bg-white text-navy px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all text-sm font-bold"
             >
               🖨️ طباعة
@@ -121,7 +240,7 @@ function StoryPage() {
           </div>
         </div>
 
-        {/* Illustration generate button - hidden on print */}
+        {/* Generate illustrations button */}
         {!hasIllustrations && (
           <div className="no-print mb-6">
             <StoryIllustrations
@@ -132,71 +251,102 @@ function StoryPage() {
           </div>
         )}
 
-        {/* Book container */}
-        <div className="story-book bg-white rounded-2xl shadow-lg overflow-hidden">
-          {/* Book cover / title page */}
-          <div className="story-page story-cover text-center py-16 px-8 border-b-2 border-cream-dark">
-            <div className="text-6xl mb-6">📖</div>
-            <h1 className="font-amiri text-4xl md:text-5xl font-bold text-navy mb-4">
-              قصة {story.child_name}
-            </h1>
-            <div className="w-24 h-1 bg-gold mx-auto rounded-full"></div>
+        {/* ═══ Interactive Flip Book (screen only) ═══ */}
+        <div className="no-print book-scene">
+          <div className="book-wrapper">
+            {bookPages.map((page, i) => (
+              <div
+                key={i}
+                className={`book-leaf${isPageTurned(i) ? ' turned' : ''}${i === 0 ? ' cover-leaf' : ''}${i === 0 && currentPage === 0 && animatingPage === null ? ' cover-closed' : ''}`}
+                style={{ zIndex: getPageZIndex(i) }}
+                onClick={i === currentPage ? flipForward : undefined}
+              >
+                <div className="leaf-front">
+                  {renderPageContent(page)}
+                </div>
+                <div className="leaf-back">
+                  <div className="leaf-back-pattern">
+                    <div className="back-pattern-border">
+                      <div className="back-pattern-inner"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Story paragraphs with illustrations */}
-          {paragraphs.map((paragraph, index) => {
-            const paraIllustrations = illustrationsByParagraph[index] || []
-            const hasParagraphImages = paraIllustrations.length > 0
-
-            return (
-              <div
-                key={index}
-                className={`story-page border-b border-cream-dark last:border-b-0 ${
-                  hasParagraphImages ? 'story-page-illustrated' : ''
-                }`}
+          {/* Navigation controls */}
+          {currentPage > 0 && (
+            <div className="book-nav">
+              <button
+                onClick={flipBack}
+                disabled={animatingPage !== null || currentPage <= 0}
+                className="book-nav-btn"
               >
-                {hasParagraphImages ? (
-                  <div className="story-spread">
-                    {/* Text side (left in LTR visual, which is left on screen) */}
-                    <div className="story-text-column">
-                      <p className="font-amiri text-xl md:text-2xl leading-loose text-navy whitespace-pre-line">
-                        {paragraph.trim()}
-                      </p>
+                → السابق
+              </button>
+              <span className="book-nav-counter">
+                {currentPage} / {totalPages - 2}
+              </span>
+              <button
+                onClick={flipForward}
+                disabled={animatingPage !== null || currentPage >= totalPages - 1}
+                className="book-nav-btn"
+              >
+                التالي ←
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ═══ Print version (hidden on screen) ═══ */}
+        <div className="print-book">
+          {/* Cover */}
+          <div className="print-cover">
+            <div className="text-6xl mb-4">📖</div>
+            <h1 className="font-amiri text-4xl font-bold text-navy">قصة {story.child_name}</h1>
+            <div className="w-24 h-1 bg-gold mx-auto rounded-full mt-4"></div>
+          </div>
+
+          {/* Content pages */}
+          {paragraphs.map((para, idx) => {
+            const paraIlls = illustrationsByParagraph[idx] || []
+            return (
+              <div key={idx} className="print-page">
+                {paraIlls.length > 0 ? (
+                  <div className="print-spread">
+                    <div className="print-text-col">
+                      <p className="font-amiri text-xl leading-loose text-navy">{para.trim()}</p>
                     </div>
-                    {/* Image side (right) */}
-                    <div className="story-image-column">
-                      {paraIllustrations.map((ill, imgIdx) => (
-                        <div key={imgIdx} className="story-illustration">
-                          <img
-                            src={ill.image_url}
-                            alt={`رسمة من القصة`}
-                            className="w-full h-auto rounded-xl shadow-md"
-                            loading="lazy"
-                          />
-                        </div>
+                    <div className="print-img-col">
+                      {paraIlls.map((ill, imgIdx) => (
+                        <img
+                          key={imgIdx}
+                          src={ill.image_url}
+                          alt="رسمة من القصة"
+                          className="print-img"
+                        />
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <div className="story-text-full">
-                    <p className="font-amiri text-xl md:text-2xl leading-loose text-navy whitespace-pre-line">
-                      {paragraph.trim()}
-                    </p>
+                  <div className="print-text-only">
+                    <p className="font-amiri text-xl leading-loose text-navy">{para.trim()}</p>
                   </div>
                 )}
               </div>
             )
           })}
 
-          {/* Decorative footer / back cover */}
-          <div className="story-page story-endpage text-center py-12">
-            <div className="w-24 h-1 bg-gold mx-auto rounded-full mb-6"></div>
+          {/* End */}
+          <div className="print-endpage">
+            <div className="w-24 h-1 bg-gold mx-auto rounded-full mb-4"></div>
             <span className="font-amiri text-gold text-3xl">✨ النهاية ✨</span>
-            <div className="w-24 h-1 bg-gold mx-auto rounded-full mt-6"></div>
+            <div className="w-24 h-1 bg-gold mx-auto rounded-full mt-4"></div>
           </div>
         </div>
 
-        {/* Bottom CTA - hidden on print */}
+        {/* Bottom CTA */}
         <div className="no-print text-center mt-8">
           <Link
             to="/create"
