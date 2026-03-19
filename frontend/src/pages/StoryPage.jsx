@@ -4,7 +4,6 @@ import api from '../api'
 import LoadingAnimation from '../components/LoadingAnimation'
 import AudioPlayer from '../components/AudioPlayer'
 import StoryVideoGenerator from '../components/StoryVideoGenerator'
-import StoryIllustrations from '../components/StoryIllustrations'
 
 function StoryPage() {
   const { id } = useParams()
@@ -28,7 +27,11 @@ function StoryPage() {
       try {
         const response = await api.get(`/api/story/${id}/`)
         setStory(response.data)
-        if (response.data.status === 'completed' || response.data.status === 'failed') {
+        // Keep polling until story + illustrations are both done
+        const s = response.data
+        const storyDone = s.status === 'completed' || s.status === 'failed'
+        const illsDone = s.illustrations_status === 'completed' || s.illustrations_status === 'failed'
+        if (storyDone && illsDone) {
           clearInterval(pollRef.current)
         }
       } catch (err) {
@@ -153,6 +156,25 @@ function StoryPage() {
   const renderPageContent = (page) => {
     if (page.type === 'cover') {
       const title = story.story_title || `قصة ${story.child_name}`
+      const coverImage = story.cover_image_url
+
+      if (coverImage) {
+        // Cover with illustration background + cloud text overlay
+        return (
+          <div className="illustrated-page cover-illustrated">
+            <img src={coverImage} alt="غلاف القصة" className="page-bg-img" />
+            <div className="cover-cloud">
+              <div className="cover-icon">{wishIcon}</div>
+              <h1 className="font-amiri cover-title">{title}</h1>
+              <div className="cover-divider"></div>
+              <p className="cover-subtitle font-amiri">{story.child_name}</p>
+              <p className="cover-hint">اضغط لفتح الكتاب</p>
+            </div>
+          </div>
+        )
+      }
+
+      // Fallback: gradient cover (no illustrations)
       return (
         <div className="book-page-inner cover-inner">
           <div className="cover-ornament top-ornament">{themeAccent} {themeAccent} {themeAccent}</div>
@@ -292,17 +314,6 @@ function StoryPage() {
             <StoryVideoGenerator
               story={story}
               paragraphs={paragraphs}
-            />
-          </div>
-        )}
-
-        {/* Generate illustrations button */}
-        {!hasIllustrations && (
-          <div className="no-print mb-6">
-            <StoryIllustrations
-              orderId={id}
-              illustrations={story.illustrations}
-              illustrationsStatus={story.illustrations_status}
             />
           </div>
         )}

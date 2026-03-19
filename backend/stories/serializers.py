@@ -52,6 +52,7 @@ class StoryOrderOutputSerializer(serializers.ModelSerializer):
     audio_url = serializers.SerializerMethodField()
     illustrations = serializers.SerializerMethodField()
     video_clips = serializers.SerializerMethodField()
+    cover_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = StoryOrder
@@ -60,6 +61,7 @@ class StoryOrderOutputSerializer(serializers.ModelSerializer):
             'story_title', 'story_moral', 'story_text', 'status',
             'audio_status', 'audio_url',
             'illustrations_status', 'illustrations',
+            'cover_image_url',
             'video_status', 'video_clips',
             'created_at',
         ]
@@ -70,6 +72,14 @@ class StoryOrderOutputSerializer(serializers.ModelSerializer):
             if request:
                 return request.build_absolute_uri(obj.audio_file.url)
             return obj.audio_file.url
+        return None
+
+    def get_cover_image_url(self, obj):
+        if obj.cover_illustration and obj.cover_illustration.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.cover_illustration.image.url)
+            return obj.cover_illustration.image.url
         return None
 
     def get_illustrations(self, obj):

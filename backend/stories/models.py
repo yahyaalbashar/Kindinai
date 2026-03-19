@@ -51,6 +51,13 @@ class StoryOrder(models.Model):
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    cover_illustration = models.ForeignKey(
+        'StoryIllustration',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+    )
     illustrations_status = models.CharField(
         max_length=20,
         choices=[('pending', 'Pending'), ('generating', 'Generating'), ('completed', 'Completed'), ('failed', 'Failed')],
