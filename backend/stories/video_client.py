@@ -8,7 +8,7 @@ from django.core.files.base import ContentFile
 
 logger = logging.getLogger(__name__)
 
-VEO_MODEL = 'veo-3.0-generate-preview'
+VEO_MODEL = 'veo-2.0-generate-001'
 POLL_INTERVAL = 20  # seconds
 MAX_POLL_TIME = 600  # 10 minutes max wait per clip
 
