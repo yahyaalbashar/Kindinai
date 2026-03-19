@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
+SKIP_STRIPE = os.getenv('SKIP_STRIPE', 'False') == 'True'
+
 
 @api_view(['POST'])
 def create_payment_intent(request):
@@ -25,6 +27,15 @@ def create_payment_intent(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     order = serializer.save()
+
+    if SKIP_STRIPE:
+        order.status = StoryOrder.Status.PAID
+        order.save()
+        return Response({
+            'client_secret': None,
+            'order_id': str(order.id),
+            'skip_payment': True,
+        })
 
     try:
         intent = stripe.PaymentIntent.create(
@@ -56,8 +67,9 @@ def generate_story_view(request):
     except StoryOrder.DoesNotExist:
         return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    # In dev mode with SKIP_STRIPE, order is already paid
     # Handle race condition: if webhook hasn't fired yet, verify payment directly
-    if order.status == StoryOrder.Status.PENDING_PAYMENT and order.stripe_payment_intent_id:
+    if not SKIP_STRIPE and order.status == StoryOrder.Status.PENDING_PAYMENT and order.stripe_payment_intent_id:
         try:
             intent = stripe.PaymentIntent.retrieve(order.stripe_payment_intent_id)
             if intent.status == 'succeeded':

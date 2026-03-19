@@ -7,7 +7,8 @@ import PaymentForm from '../components/PaymentForm'
 import LoadingAnimation from '../components/LoadingAnimation'
 import api from '../api'
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+const stripePromise = stripeKey ? loadStripe(stripeKey) : null
 
 function CreatePage() {
   const navigate = useNavigate()
@@ -19,13 +20,33 @@ function CreatePage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState(null)
 
+  const generateStory = async (oid) => {
+    setIsGenerating(true)
+    setError(null)
+    try {
+      await api.post('/api/generate-story/', { order_id: oid })
+      navigate(`/story/${oid}`)
+    } catch (err) {
+      setError(err.response?.data?.error || 'حدث خطأ في إنشاء القصة.')
+      setIsGenerating(false)
+    }
+  }
+
   const handleFormSubmit = async (data) => {
     setIsLoading(true)
     setError(null)
     try {
       const response = await api.post('/api/create-payment-intent/', data)
       setFormData(data)
-      setOrderId(response.data.order_id)
+      const oid = response.data.order_id
+      setOrderId(oid)
+
+      // Skip payment in dev mode
+      if (response.data.skip_payment) {
+        await generateStory(oid)
+        return
+      }
+
       setClientSecret(response.data.client_secret)
       setStep(2)
     } catch (err) {
@@ -36,15 +57,7 @@ function CreatePage() {
   }
 
   const handlePaymentSuccess = async (paymentIntentId) => {
-    setIsGenerating(true)
-    setError(null)
-    try {
-      await api.post('/api/generate-story/', { order_id: orderId })
-      navigate(`/story/${orderId}`)
-    } catch (err) {
-      setError(err.response?.data?.error || 'حدث خطأ في إنشاء القصة.')
-      setIsGenerating(false)
-    }
+    await generateStory(orderId)
   }
 
   if (isGenerating) {
