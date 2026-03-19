@@ -12,6 +12,12 @@ SYSTEM_PROMPT = """
 - تستخدم لغة عربية جميلة وبسيطة يفهمها الطفل
 - لا تتجاوز 600 كلمة
 - تنتهي بجملة دافئة موجهة للطفل مباشرة
+
+يجب أن يكون ردك بالتنسيق التالي بالضبط:
+العنوان: [عنوان القصة - يعكس الدرس والعبرة من القصة بطريقة جذابة للأطفال]
+العبرة: [جملة واحدة قصيرة تلخص الدرس المستفاد من القصة]
+
+[نص القصة هنا]
 """.strip()
 
 WISH_MAP = {
@@ -61,7 +67,32 @@ def generate_story(order):
         ],
     )
 
-    return message.content[0].text
+    raw = message.content[0].text.strip()
+
+    # Parse title, moral, and story text from the structured response
+    title = ''
+    moral = ''
+    story_lines = []
+    parsing_story = False
+
+    for line in raw.split('\n'):
+        stripped = line.strip()
+        if stripped.startswith('العنوان:'):
+            title = stripped.replace('العنوان:', '').strip()
+        elif stripped.startswith('العبرة:'):
+            moral = stripped.replace('العبرة:', '').strip()
+        else:
+            if title and (stripped or parsing_story):
+                parsing_story = True
+                story_lines.append(line)
+
+    story_text = '\n'.join(story_lines).strip()
+
+    # Fallback if parsing fails
+    if not story_text:
+        story_text = raw
+
+    return story_text, title, moral
 
 
 SCENE_EXTRACTION_PROMPT = """

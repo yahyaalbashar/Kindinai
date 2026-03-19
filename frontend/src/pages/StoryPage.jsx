@@ -121,18 +121,44 @@ function StoryPage() {
     }
   }
 
+  const goToFirstPage = useCallback(() => {
+    if (animatingPage !== null) return
+    setCurrentPage(0)
+  }, [animatingPage])
+
+  // Map wish to a thematic icon
+  const wishIcon = {
+    brave: '🦁',
+    kind: '💖',
+    smart: '🌟',
+    curious: '🔭',
+    strong: '⛰️',
+  }[story?.wish] || '📖'
+
+  // Map theme to a decorative accent
+  const themeAccent = {
+    adventure: '🌿',
+    magic: '✨',
+    animals: '🐾',
+    space: '🚀',
+    ocean: '🐚',
+  }[story?.theme] || '✦'
+
   const renderPageContent = (page) => {
     if (page.type === 'cover') {
+      const title = story.story_title || `قصة ${story.child_name}`
       return (
         <div className="book-page-inner cover-inner">
-          <div className="cover-ornament top-ornament">✦ ✦ ✦</div>
-          <div className="cover-icon">📖</div>
-          <h1 className="font-amiri cover-title">
-            قصة {story.child_name}
-          </h1>
+          <div className="cover-ornament top-ornament">{themeAccent} {themeAccent} {themeAccent}</div>
+          <div className="cover-icon">{wishIcon}</div>
+          <h1 className="font-amiri cover-title">{title}</h1>
           <div className="cover-divider"></div>
+          <p className="cover-subtitle font-amiri">{story.child_name}</p>
+          {story.story_moral && (
+            <p className="cover-moral font-amiri">« {story.story_moral} »</p>
+          )}
           <p className="cover-hint">اضغط لفتح الكتاب</p>
-          <div className="cover-ornament bottom-ornament">✦ ✦ ✦</div>
+          <div className="cover-ornament bottom-ornament">{themeAccent} {themeAccent} {themeAccent}</div>
         </div>
       )
     }
@@ -142,7 +168,16 @@ function StoryPage() {
         <div className="book-page-inner end-inner">
           <div className="cover-divider"></div>
           <span className="font-amiri end-text">✨ النهاية ✨</span>
+          {story.story_moral && (
+            <p className="font-amiri end-moral">« {story.story_moral} »</p>
+          )}
           <div className="cover-divider"></div>
+          <button
+            onClick={(e) => { e.stopPropagation(); goToFirstPage(); }}
+            className="end-restart-btn"
+          >
+            ↩ العودة للغلاف
+          </button>
         </div>
       )
     }
@@ -309,9 +344,13 @@ function StoryPage() {
         <div className="print-book">
           {/* Cover */}
           <div className="print-cover">
-            <div className="text-6xl mb-4">📖</div>
-            <h1 className="font-amiri text-4xl font-bold text-navy">قصة {story.child_name}</h1>
+            <div className="text-6xl mb-4">{wishIcon}</div>
+            <h1 className="font-amiri text-4xl font-bold text-navy">{story.story_title || `قصة ${story.child_name}`}</h1>
+            <p className="font-amiri text-xl text-sage mt-2">{story.child_name}</p>
             <div className="w-24 h-1 bg-gold mx-auto rounded-full mt-4"></div>
+            {story.story_moral && (
+              <p className="font-amiri text-lg text-navy mt-4 italic">« {story.story_moral} »</p>
+            )}
           </div>
 
           {/* Content pages */}

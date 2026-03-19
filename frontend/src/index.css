@@ -161,10 +161,26 @@ body {
   margin: 1rem auto;
 }
 
+.cover-subtitle {
+  font-size: 1.2rem;
+  color: #D4A843;
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+.cover-moral {
+  font-size: 0.95rem;
+  color: rgba(255, 248, 240, 0.75);
+  margin-top: 1rem;
+  line-height: 1.6;
+  max-width: 85%;
+  font-style: italic;
+}
+
 .cover-hint {
-  color: rgba(255, 248, 240, 0.6);
-  font-size: 0.85rem;
-  margin-top: 1.5rem;
+  color: rgba(255, 248, 240, 0.5);
+  font-size: 0.8rem;
+  margin-top: 1rem;
 }
 
 .cover-ornament {
@@ -199,6 +215,35 @@ body {
 .end-text {
   font-size: 2rem;
   color: #D4A843;
+}
+
+.end-moral {
+  font-size: 1rem;
+  color: #52796F;
+  margin-top: 1rem;
+  line-height: 1.6;
+  max-width: 85%;
+  text-align: center;
+  font-style: italic;
+}
+
+.end-restart-btn {
+  margin-top: 1.5rem;
+  background: #1B4332;
+  color: #FFF8F0;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  transition: all 0.2s;
+}
+
+.end-restart-btn:hover {
+  background: #2D6A4F;
+  transform: scale(1.05);
 }
 
 /* ── Content pages ── */
