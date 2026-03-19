@@ -288,7 +288,6 @@ function StoryPage() {
             <StoryVideoGenerator
               story={story}
               paragraphs={paragraphs}
-              illustrationsByParagraph={illustrationsByParagraph}
             />
           </div>
         )}

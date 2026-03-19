@@ -535,6 +535,12 @@ body {
   transform: scale(1.02);
 }
 
+.video-gen-hint {
+  color: #52796F;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
 .video-gen-progress {
   display: flex;
   flex-direction: column;
@@ -547,47 +553,6 @@ body {
   align-items: center;
   gap: 0.5rem;
   color: #1B2A4A;
-}
-
-.video-gen-bar-bg {
-  width: 100%;
-  max-width: 300px;
-  height: 8px;
-  background: #F5EBD8;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.video-gen-bar-fill {
-  height: 100%;
-  background: #1B4332;
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-.video-gen-cancel {
-  background: none;
-  border: none;
-  color: #52796F;
-  font-size: 0.85rem;
-  cursor: pointer;
-  font-family: 'Cairo', sans-serif;
-  text-decoration: underline;
-}
-
-.video-gen-done {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.video-gen-preview {
-  width: 100%;
-  max-width: 320px;
-  max-height: 500px;
-  border-radius: 12px;
-  border: 3px solid #F5EBD8;
 }
 
 .video-gen-retry {
@@ -608,9 +573,71 @@ body {
   color: white;
 }
 
-.video-gen-error {
+/* ── Video Player ── */
+
+.video-player-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1rem;
+}
+
+.video-player-screen {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 9 / 16;
+  background: #1B2A4A;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.video-player-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-player-poster {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FFFDF8 0%, #F5EBD8 100%);
+}
+
+.video-text-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 1rem 1rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+  color: white;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  text-align: right;
+  direction: rtl;
+}
+
+.video-clip-counter {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.video-player-controls {
+  display: flex;
   gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
 }

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import StoryOrder, StoryIllustration
+from .models import StoryOrder, StoryIllustration, StoryVideoClip
 
 
 class StoryOrderCreateSerializer(serializers.ModelSerializer):
@@ -29,16 +29,36 @@ class StoryIllustrationSerializer(serializers.ModelSerializer):
         return None
 
 
+class StoryVideoClipSerializer(serializers.ModelSerializer):
+    video_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = StoryVideoClip
+        fields = ['paragraph_index', 'video_url']
+
+    def get_video_url(self, obj):
+        if obj.video:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.video.url)
+            return obj.video.url
+        return None
+
+
 class StoryOrderOutputSerializer(serializers.ModelSerializer):
     audio_url = serializers.SerializerMethodField()
     illustrations = serializers.SerializerMethodField()
+    video_clips = serializers.SerializerMethodField()
 
     class Meta:
         model = StoryOrder
         fields = [
             'id', 'child_name', 'child_age', 'wish', 'theme',
             'story_title', 'story_moral', 'story_text', 'status',
-            'audio_status', 'audio_url', 'illustrations_status', 'illustrations', 'created_at',
+            'audio_status', 'audio_url',
+            'illustrations_status', 'illustrations',
+            'video_status', 'video_clips',
+            'created_at',
         ]
 
     def get_audio_url(self, obj):
@@ -54,3 +74,9 @@ class StoryOrderOutputSerializer(serializers.ModelSerializer):
         if not qs.exists():
             return []
         return StoryIllustrationSerializer(qs, many=True, context=self.context).data
+
+    def get_video_clips(self, obj):
+        qs = obj.video_clips.all()
+        if not qs.exists():
+            return []
+        return StoryVideoClipSerializer(qs, many=True, context=self.context).data

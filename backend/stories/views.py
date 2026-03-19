@@ -14,6 +14,7 @@ from .serializers import StoryOrderCreateSerializer, StoryOrderOutputSerializer
 from .claude_client import generate_story, extract_scene_descriptions
 from .tts_client import generate_audio
 from .image_client import generate_story_illustrations
+from .video_client import generate_story_video
 
 logger = logging.getLogger(__name__)
 
@@ -206,6 +207,59 @@ def generate_illustrations_view(request):
         order.illustrations_status = 'failed'
         order.save()
         return Response({'error': 'فشل في إنشاء الرسومات'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def generate_video_view(request):
+    order_id = request.data.get('order_id')
+    if not order_id:
+        return Response({'error': 'order_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        order = StoryOrder.objects.get(id=order_id)
+    except StoryOrder.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if order.status != StoryOrder.Status.COMPLETED or not order.story_text:
+        return Response({'error': 'Story not ready'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if order.illustrations_status != 'completed' or not order.illustrations.exists():
+        return Response({'error': 'Illustrations not ready'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if order.video_status == 'completed' and order.video_clips.exists():
+        from .serializers import StoryVideoClipSerializer
+        clips_data = StoryVideoClipSerializer(
+            order.video_clips.all(), many=True, context={'request': request}
+        ).data
+        return Response({
+            'order_id': str(order.id),
+            'video_status': 'completed',
+            'video_clips': clips_data,
+        })
+
+    order.video_status = 'generating'
+    order.save()
+
+    try:
+        clips = generate_story_video(order)
+        order.video_status = 'completed'
+        order.save()
+
+        from .serializers import StoryVideoClipSerializer
+        clips_data = StoryVideoClipSerializer(
+            clips, many=True, context={'request': request}
+        ).data
+
+        return Response({
+            'order_id': str(order.id),
+            'video_status': 'completed',
+            'video_clips': clips_data,
+        })
+    except Exception as e:
+        logger.error(f"Video generation failed for order {order.id}: {e}")
+        order.video_status = 'failed'
+        order.save()
+        return Response({'error': 'فشل في إنشاء الفيديو'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @csrf_exempt
