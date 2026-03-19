@@ -504,3 +504,113 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* ═══════════════════════════════════════════
+   STORY VIDEO GENERATOR
+   ═══════════════════════════════════════════ */
+
+.story-video-generator {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.video-gen-btn {
+  background: #1B4332;
+  color: #FFF8F0;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  transition: all 0.2s;
+}
+
+.video-gen-btn:hover {
+  background: #2D6A4F;
+  transform: scale(1.02);
+}
+
+.video-gen-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.video-gen-progress-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1B2A4A;
+}
+
+.video-gen-bar-bg {
+  width: 100%;
+  max-width: 300px;
+  height: 8px;
+  background: #F5EBD8;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.video-gen-bar-fill {
+  height: 100%;
+  background: #1B4332;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.video-gen-cancel {
+  background: none;
+  border: none;
+  color: #52796F;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  text-decoration: underline;
+}
+
+.video-gen-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.video-gen-preview {
+  width: 100%;
+  max-width: 320px;
+  max-height: 500px;
+  border-radius: 12px;
+  border: 3px solid #F5EBD8;
+}
+
+.video-gen-retry {
+  background: none;
+  border: 2px solid #D4A843;
+  color: #1B2A4A;
+  padding: 0.5rem 1.25rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  transition: all 0.2s;
+}
+
+.video-gen-retry:hover {
+  background: #D4A843;
+  color: white;
+}
+
+.video-gen-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}

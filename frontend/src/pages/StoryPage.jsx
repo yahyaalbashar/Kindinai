@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import api from '../api'
 import LoadingAnimation from '../components/LoadingAnimation'
 import AudioPlayer from '../components/AudioPlayer'
+import StoryVideoGenerator from '../components/StoryVideoGenerator'
 import StoryIllustrations from '../components/StoryIllustrations'
 
 function StoryPage() {
@@ -280,6 +281,17 @@ function StoryPage() {
         <div className="no-print mb-6">
           <AudioPlayer orderId={id} audioUrl={story.audio_url} audioStatus={story.audio_status} />
         </div>
+
+        {/* Video Generator */}
+        {hasIllustrations && (
+          <div className="no-print mb-6">
+            <StoryVideoGenerator
+              story={story}
+              paragraphs={paragraphs}
+              illustrationsByParagraph={illustrationsByParagraph}
+            />
+          </div>
+        )}
 
         {/* Generate illustrations button */}
         {!hasIllustrations && (
