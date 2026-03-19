@@ -8,5 +8,6 @@ urlpatterns = [
     path('generate-audio/', views.generate_audio_view),
     path('generate-illustrations/', views.generate_illustrations_view),
     path('generate-video/', views.generate_video_view),
+    path('feature-flags/', views.feature_flags_view),
     path('webhook/stripe/', views.stripe_webhook),
 ]
