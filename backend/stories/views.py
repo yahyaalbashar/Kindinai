@@ -11,7 +11,7 @@ from rest_framework import status
 
 from .models import StoryOrder
 from .serializers import StoryOrderCreateSerializer, StoryOrderOutputSerializer
-from .claude_client import generate_story, extract_scene_descriptions
+from .claude_client import generate_story, extract_scene_descriptions, generate_character_description
 from .tts_client import generate_audio
 from .image_client import generate_story_illustrations
 from .video_client import generate_story_video
@@ -187,8 +187,9 @@ def generate_illustrations_view(request):
     order.save()
 
     try:
+        character_description = generate_character_description(order)
         scene_descriptions = extract_scene_descriptions(order.story_text, order)
-        illustrations = generate_story_illustrations(order, scene_descriptions)
+        illustrations = generate_story_illustrations(order, scene_descriptions, character_description)
         order.illustrations_status = 'completed'
         order.save()
 

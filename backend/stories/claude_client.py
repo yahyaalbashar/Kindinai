@@ -95,6 +95,46 @@ def generate_story(order):
     return story_text, title, moral
 
 
+CHARACTER_DESCRIPTION_PROMPT = """
+You are given context about a children's story character. Generate a SINGLE, detailed visual description of the main child character that an illustrator can reuse across every scene. Include:
+- Exact hair color, style, and length
+- Skin tone
+- Eye color and shape
+- Specific clothing (colors, patterns, accessories)
+- Build and height relative to age
+- Any distinguishing features
+
+Also describe the animal companion with the same level of detail.
+
+Keep it to 3-4 sentences total. Be very specific (e.g. "dark brown curly hair in two pigtails" not just "brown hair"). Write in English only.
+
+Return ONLY the description, nothing else.
+""".strip()
+
+
+def generate_character_description(order):
+    """Generate a consistent visual character description for illustrations."""
+    client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
+
+    gender = "boy" if order.child_gender == 'boy' else "girl"
+    context = (
+        f"The main character is a {order.child_age}-year-old {gender} named {order.child_name}. "
+        f"Their favorite animal is a {order.favorite_animal}. "
+        f"The story theme is: {order.theme}."
+    )
+
+    message = client.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=300,
+        system=CHARACTER_DESCRIPTION_PROMPT,
+        messages=[
+            {"role": "user", "content": context}
+        ],
+    )
+
+    return message.content[0].text.strip()
+
+
 SCENE_EXTRACTION_PROMPT = """
 You are given an Arabic children's bedtime story. The story has been split into paragraphs (separated by blank lines).
 

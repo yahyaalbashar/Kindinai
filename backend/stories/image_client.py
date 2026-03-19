@@ -15,11 +15,14 @@ STYLE_PROMPT = (
 )
 
 
-def generate_illustration(scene_description, order, scene_index):
+def generate_illustration(scene_description, order, scene_index, character_description=""):
     """Generate a single illustration for a story scene using Gemini."""
     client = genai.Client(api_key=os.getenv('GOOGLE_GEMINI_API_KEY'))
 
-    prompt = f"{STYLE_PROMPT}. Scene: {scene_description}"
+    prompt = f"{STYLE_PROMPT}."
+    if character_description:
+        prompt += f" Characters (draw exactly as described): {character_description}."
+    prompt += f" Scene: {scene_description}"
 
     response = client.models.generate_content(
         model="gemini-2.5-flash-image",
@@ -41,17 +44,18 @@ def generate_illustration(scene_description, order, scene_index):
     raise RuntimeError("No image returned from Gemini API")
 
 
-def generate_story_illustrations(order, scene_descriptions):
+def generate_story_illustrations(order, scene_descriptions, character_description=""):
     """Generate illustrations for all scenes and save them.
 
     scene_descriptions: list of (paragraph_index, description) tuples
+    character_description: consistent character appearance description for all scenes
     """
     from .models import StoryIllustration
 
     illustrations = []
     for i, (para_index, scene) in enumerate(scene_descriptions):
         try:
-            filename, content = generate_illustration(scene, order, i)
+            filename, content = generate_illustration(scene, order, i, character_description)
             illustration = StoryIllustration(
                 story=order,
                 scene_index=i,
