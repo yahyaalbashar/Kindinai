@@ -16,7 +16,7 @@ MAX_POLL_TIME = 600  # 10 minutes max wait per clip
 def generate_video_clip(client, illustration, paragraph_text):
     """Generate a single animated video clip from an illustration using Veo."""
     # Read the illustration image
-    image = types.Image.from_file(illustration.image.path)
+    image = types.Image.from_file(location=illustration.image.path)
 
     # Build a cinematic prompt from the scene description
     prompt = (
