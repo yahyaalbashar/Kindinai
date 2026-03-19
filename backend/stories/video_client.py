@@ -8,7 +8,7 @@ from django.core.files.base import ContentFile
 
 logger = logging.getLogger(__name__)
 
-VEO_MODEL = 'veo-2.0-generate-001'
+VEO_MODEL = 'veo-3.0-generate-001'
 POLL_INTERVAL = 20  # seconds
 MAX_POLL_TIME = 600  # 10 minutes max wait per clip
 
@@ -47,6 +47,15 @@ def generate_video_clip(client, illustration, paragraph_text):
         time.sleep(POLL_INTERVAL)
         elapsed += POLL_INTERVAL
         operation = client.operations.get(operation)
+
+    # Check for errors
+    if operation.error:
+        raise RuntimeError(f"Video generation failed: {operation.error}")
+    if not operation.response or not operation.response.generated_videos:
+        raise RuntimeError(
+            f"Video generation returned no results. "
+            f"Operation done={operation.done}, response={operation.response}"
+        )
 
     # Download the generated video
     generated_video = operation.response.generated_videos[0]
