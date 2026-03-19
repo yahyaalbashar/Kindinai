@@ -90,8 +90,10 @@ def generate_story_view(request):
     order.save()
 
     try:
-        story_text = generate_story(order)
+        story_text, title, moral = generate_story(order)
         order.story_text = story_text
+        order.story_title = title
+        order.story_moral = moral
         order.status = StoryOrder.Status.COMPLETED
         order.save()
     except Exception as e:

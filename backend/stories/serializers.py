@@ -36,7 +36,8 @@ class StoryOrderOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoryOrder
         fields = [
-            'id', 'child_name', 'child_age', 'story_text', 'status',
+            'id', 'child_name', 'child_age', 'wish', 'theme',
+            'story_title', 'story_moral', 'story_text', 'status',
             'audio_status', 'audio_url', 'illustrations_status', 'illustrations', 'created_at',
         ]
 

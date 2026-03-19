@@ -38,6 +38,8 @@ class StoryOrder(models.Model):
     wish = models.CharField(max_length=50, choices=WISH_CHOICES)
     theme = models.CharField(max_length=50, choices=THEME_CHOICES)
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True)
+    story_title = models.CharField(max_length=200, blank=True)
+    story_moral = models.CharField(max_length=300, blank=True)
     story_text = models.TextField(blank=True)
     audio_file = models.FileField(upload_to='story_audio/', blank=True)
     audio_status = models.CharField(
