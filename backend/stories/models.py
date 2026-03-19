@@ -39,6 +39,12 @@ class StoryOrder(models.Model):
     theme = models.CharField(max_length=50, choices=THEME_CHOICES)
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True)
     story_text = models.TextField(blank=True)
+    audio_file = models.FileField(upload_to='story_audio/', blank=True)
+    audio_status = models.CharField(
+        max_length=20,
+        choices=[('pending', 'Pending'), ('generating', 'Generating'), ('completed', 'Completed'), ('failed', 'Failed')],
+        default='pending',
+    )
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT)
     created_at = models.DateTimeField(auto_now_add=True)
 

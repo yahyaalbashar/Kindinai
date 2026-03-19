@@ -12,6 +12,7 @@ from rest_framework import status
 from .models import StoryOrder
 from .serializers import StoryOrderCreateSerializer, StoryOrderOutputSerializer
 from .claude_client import generate_story
+from .tts_client import generate_audio
 
 logger = logging.getLogger(__name__)
 
@@ -111,8 +112,46 @@ def get_story(request, order_id):
     except StoryOrder.DoesNotExist:
         return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = StoryOrderOutputSerializer(order)
+    serializer = StoryOrderOutputSerializer(order, context={'request': request})
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def generate_audio_view(request):
+    order_id = request.data.get('order_id')
+    if not order_id:
+        return Response({'error': 'order_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        order = StoryOrder.objects.get(id=order_id)
+    except StoryOrder.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if order.status != StoryOrder.Status.COMPLETED or not order.story_text:
+        return Response({'error': 'Story not ready'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if order.audio_status == 'completed' and order.audio_file:
+        return Response({
+            'order_id': str(order.id),
+            'audio_status': 'completed',
+            'audio_url': request.build_absolute_uri(order.audio_file.url),
+        })
+
+    order.audio_status = 'generating'
+    order.save()
+
+    try:
+        audio_url = generate_audio(order)
+        return Response({
+            'order_id': str(order.id),
+            'audio_status': 'completed',
+            'audio_url': request.build_absolute_uri(audio_url),
+        })
+    except Exception as e:
+        logger.error(f"Audio generation failed for order {order.id}: {e}")
+        order.audio_status = 'failed'
+        order.save()
+        return Response({'error': 'فشل في إنشاء الصوت'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @csrf_exempt
