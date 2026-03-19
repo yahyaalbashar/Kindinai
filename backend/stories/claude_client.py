@@ -65,9 +65,9 @@ def generate_story(order):
 
 
 SCENE_EXTRACTION_PROMPT = """
-You are given an Arabic children's bedtime story. Extract exactly 4 key visual scenes from the story.
+You are given an Arabic children's bedtime story. The story has been split into paragraphs (separated by blank lines).
 
-For each scene, write a short English description (1-2 sentences) that describes the visual setting, characters, and action. These descriptions will be used to generate children's book illustrations.
+For EACH paragraph, generate 1 or 2 visual scene descriptions in English. Each description should be 1-2 sentences describing the visual setting, characters, and action for a children's book illustration.
 
 Important:
 - Describe the child character's appearance consistently (age, gender, clothing)
@@ -75,35 +75,60 @@ Important:
 - Mention the animal character if present in the scene
 - Keep descriptions visual and concrete, not abstract
 - Do NOT include any Arabic text
+- Each paragraph gets 1 or 2 illustrations maximum
+- Choose the most visually interesting moments
 
-Return ONLY the 4 descriptions, one per line, numbered 1-4. No other text.
+Return the output in this EXACT format (no other text):
+PARAGRAPH 0
+1. [description]
+2. [description]
+PARAGRAPH 1
+1. [description]
+PARAGRAPH 2
+1. [description]
+2. [description]
+...and so on for each paragraph.
 """.strip()
 
 
 def extract_scene_descriptions(story_text, order):
-    """Extract 4 key scene descriptions from a story for illustration."""
+    """Extract scene descriptions per paragraph from a story for illustration."""
     client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
 
     gender = "boy" if order.child_gender == 'boy' else "girl"
     context = f"The main character is a {order.child_age}-year-old {gender} named {order.child_name}. Their favorite animal is a {order.favorite_animal}."
 
+    # Split story into paragraphs for reference
+    paragraphs = [p.strip() for p in story_text.strip().split('\n\n') if p.strip()]
+    numbered_paragraphs = "\n\n".join(
+        f"[Paragraph {i}]\n{p}" for i, p in enumerate(paragraphs)
+    )
+
     message = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=1024,
+        max_tokens=2048,
         system=SCENE_EXTRACTION_PROMPT,
         messages=[
-            {"role": "user", "content": f"{context}\n\nStory:\n{story_text}"}
+            {"role": "user", "content": f"{context}\n\nStory paragraphs:\n{numbered_paragraphs}"}
         ],
     )
 
-    lines = message.content[0].text.strip().split('\n')
-    scenes = []
-    for line in lines:
+    # Parse the structured output into a list of (paragraph_index, description) tuples
+    result = []
+    current_para = 0
+    for line in message.content[0].text.strip().split('\n'):
         line = line.strip()
+        if not line:
+            continue
+        if line.upper().startswith('PARAGRAPH'):
+            # Extract paragraph number
+            parts = line.split()
+            if len(parts) >= 2 and parts[1].isdigit():
+                current_para = int(parts[1])
+            continue
         if line and line[0].isdigit():
-            # Remove numbering like "1. " or "1) "
-            line = line.lstrip('0123456789').lstrip('.').lstrip(')').strip()
-        if line:
-            scenes.append(line)
+            desc = line.lstrip('0123456789').lstrip('.').lstrip(')').strip()
+            if desc:
+                result.append((current_para, desc))
 
-    return scenes[:4]
+    return result
