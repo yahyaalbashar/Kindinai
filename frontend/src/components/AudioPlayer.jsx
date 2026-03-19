@@ -61,11 +61,11 @@ function AudioPlayer({ orderId, audioUrl: initialAudioUrl, audioStatus: initialS
         <button
           onClick={handleGenerateAudio}
           disabled={status === 'generating'}
-          className="bg-forest text-cream px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition-all disabled:opacity-50"
+          className="bg-sky text-white px-6 py-3 rounded-xl font-bold hover:bg-sky-dark transition-all disabled:opacity-50"
         >
           {status === 'generating' ? (
             <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-cream border-t-transparent rounded-full animate-spin" />
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               جاري إنشاء الصوت...
             </span>
           ) : (
@@ -82,8 +82,8 @@ function AudioPlayer({ orderId, audioUrl: initialAudioUrl, audioStatus: initialS
   if (status === 'generating') {
     return (
       <div className="bg-white rounded-xl p-5 shadow-md text-center">
-        <div className="flex items-center justify-center gap-2 text-sage">
-          <span className="w-5 h-5 border-2 border-forest border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center justify-center gap-2 text-lavender">
+          <span className="w-5 h-5 border-2 border-sky border-t-transparent rounded-full animate-spin" />
           <span className="font-bold">جاري إنشاء الصوت...</span>
         </div>
       </div>
@@ -96,7 +96,7 @@ function AudioPlayer({ orderId, audioUrl: initialAudioUrl, audioStatus: initialS
         <p className="text-red-600 mb-3">{error || 'فشل في إنشاء الصوت'}</p>
         <button
           onClick={handleGenerateAudio}
-          className="bg-forest text-cream px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition-all"
+          className="bg-sky text-white px-6 py-3 rounded-xl font-bold hover:bg-sky-dark transition-all"
         >
           إعادة المحاولة
         </button>
@@ -118,7 +118,7 @@ function AudioPlayer({ orderId, audioUrl: initialAudioUrl, audioStatus: initialS
       <div className="flex items-center gap-4">
         <button
           onClick={togglePlayback}
-          className="w-12 h-12 bg-forest text-cream rounded-full flex items-center justify-center text-xl hover:bg-opacity-90 transition-all flex-shrink-0"
+          className="w-12 h-12 bg-sky text-white rounded-full flex items-center justify-center text-xl hover:bg-sky-dark transition-all flex-shrink-0"
         >
           {isPlaying ? '⏸' : '▶'}
         </button>
@@ -131,7 +131,7 @@ function AudioPlayer({ orderId, audioUrl: initialAudioUrl, audioStatus: initialS
             onClick={handleSeek}
           >
             <div
-              className="h-full bg-forest rounded-full transition-all duration-200"
+              className="h-full bg-sky rounded-full transition-all duration-200"
               style={{ width: `${progress}%`, marginRight: 'auto', marginLeft: 0 }}
             />
           </div>
