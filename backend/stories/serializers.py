@@ -5,7 +5,10 @@ from .models import StoryOrder, StoryIllustration, StoryVideoClip
 class StoryOrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoryOrder
-        fields = ['child_name', 'child_age', 'child_gender', 'favorite_animal', 'wish', 'theme']
+        fields = ['child_name', 'child_age', 'child_gender', 'favorite_animal', 'wish', 'theme', 'child_photo']
+        extra_kwargs = {
+            'child_photo': {'required': False},
+        }
 
     def validate_child_age(self, value):
         if value < 3 or value > 10:

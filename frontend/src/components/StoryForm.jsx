@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 const WISH_OPTIONS = [
   { value: 'brave', label: 'شجاع' },
@@ -25,14 +25,31 @@ function StoryForm({ onSubmit, isLoading }) {
     wish: 'brave',
     theme: 'adventure',
   })
+  const [childPhoto, setChildPhoto] = useState(null)
+  const [photoPreview, setPhotoPreview] = useState(null)
+  const fileInputRef = useRef(null)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setChildPhoto(file)
+      setPhotoPreview(URL.createObjectURL(file))
+    }
+  }
+
+  const removePhoto = () => {
+    setChildPhoto(null)
+    setPhotoPreview(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSubmit({ ...formData, child_age: parseInt(formData.child_age) })
+    onSubmit({ ...formData, child_age: parseInt(formData.child_age), child_photo: childPhoto })
   }
 
   const inputClass = "w-full px-4 py-3 rounded-xl border border-cream-dark bg-white text-navy font-cairo text-lg focus:outline-none focus:ring-2 focus:ring-sky focus:border-transparent"
@@ -108,6 +125,54 @@ function StoryForm({ onSubmit, isLoading }) {
           className={inputClass}
           required
           maxLength={100}
+        />
+      </div>
+
+      {/* Optional photo upload */}
+      <div>
+        <label className={labelClass}>
+          صورة الطفل
+          <span className="text-lavender font-normal text-sm mr-2">(اختياري)</span>
+        </label>
+        <p className="text-lavender text-sm mb-3">
+          ارفع صورة طفلك لتصبح الرسومات مستوحاة من شكله الحقيقي
+        </p>
+
+        {photoPreview ? (
+          <div className="flex items-center gap-4">
+            <img
+              src={photoPreview}
+              alt="صورة الطفل"
+              className="w-20 h-20 rounded-xl object-cover border-2 border-bubblegum"
+            />
+            <div className="flex-1">
+              <p className="text-navy text-sm font-bold">{childPhoto.name}</p>
+              <button
+                type="button"
+                onClick={removePhoto}
+                className="text-red-400 hover:text-red-600 text-sm mt-1 transition-colors"
+              >
+                حذف الصورة
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full py-4 rounded-xl border-2 border-dashed border-cream-dark bg-cream hover:border-bubblegum hover:bg-white transition-all text-lavender"
+          >
+            <span className="text-2xl block mb-1">📸</span>
+            <span className="text-sm">اضغط لاختيار صورة</span>
+          </button>
+        )}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handlePhotoChange}
+          className="hidden"
         />
       </div>
 

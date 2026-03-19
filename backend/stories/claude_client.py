@@ -111,9 +111,29 @@ Keep it to 3-4 sentences total. Be very specific (e.g. "dark brown curly hair in
 Return ONLY the description, nothing else.
 """.strip()
 
+CHARACTER_DESCRIPTION_WITH_PHOTO_PROMPT = """
+You are given a photo of a real child along with context about a children's story character. Based on the child's ACTUAL appearance in the photo, generate a detailed visual description that an illustrator can reuse across every scene.
+
+Describe EXACTLY what you see in the photo:
+- Exact hair color, style, and length as shown
+- Skin tone as shown
+- Eye color and shape as shown
+- Build and height relative to age
+
+Then add story-appropriate clothing (colors, patterns, accessories) that fits the story theme.
+
+Also describe the animal companion with the same level of detail.
+
+Keep it to 3-4 sentences total. Be very specific. Write in English only.
+
+Return ONLY the description, nothing else.
+""".strip()
+
 
 def generate_character_description(order):
     """Generate a consistent visual character description for illustrations."""
+    import base64
+
     client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
 
     gender = "boy" if order.child_gender == 'boy' else "girl"
@@ -123,14 +143,52 @@ def generate_character_description(order):
         f"The story theme is: {order.theme}."
     )
 
-    message = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=300,
-        system=CHARACTER_DESCRIPTION_PROMPT,
-        messages=[
-            {"role": "user", "content": context}
-        ],
-    )
+    # If a photo was uploaded, use vision to describe the child
+    if order.child_photo:
+        order.child_photo.seek(0)
+        image_data = base64.standard_b64encode(order.child_photo.read()).decode("utf-8")
+        # Detect media type from file name
+        name = order.child_photo.name.lower()
+        if name.endswith('.png'):
+            media_type = "image/png"
+        elif name.endswith('.webp'):
+            media_type = "image/webp"
+        else:
+            media_type = "image/jpeg"
+
+        message = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=300,
+            system=CHARACTER_DESCRIPTION_WITH_PHOTO_PROMPT,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": media_type,
+                                "data": image_data,
+                            },
+                        },
+                        {
+                            "type": "text",
+                            "text": context,
+                        },
+                    ],
+                }
+            ],
+        )
+    else:
+        message = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=300,
+            system=CHARACTER_DESCRIPTION_PROMPT,
+            messages=[
+                {"role": "user", "content": context}
+            ],
+        )
 
     return message.content[0].text.strip()
 

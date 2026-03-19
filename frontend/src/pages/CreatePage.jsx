@@ -36,7 +36,21 @@ function CreatePage() {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await api.post('/api/create-payment-intent/', data)
+      // Use FormData when a photo is included
+      let payload
+      if (data.child_photo) {
+        payload = new FormData()
+        payload.append('child_name', data.child_name)
+        payload.append('child_age', data.child_age)
+        payload.append('child_gender', data.child_gender)
+        payload.append('favorite_animal', data.favorite_animal)
+        payload.append('wish', data.wish)
+        payload.append('theme', data.theme)
+        payload.append('child_photo', data.child_photo)
+      } else {
+        payload = data
+      }
+      const response = await api.post('/api/create-payment-intent/', payload)
       setFormData(data)
       const oid = response.data.order_id
       setOrderId(oid)

@@ -56,12 +56,12 @@ function PaymentForm({ onPaymentSuccess }) {
       <button
         type="submit"
         disabled={!stripe || isProcessing}
-        className="w-full bg-forest text-cream py-4 rounded-xl text-xl font-bold hover:bg-opacity-90 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-sky text-white py-4 rounded-xl text-xl font-bold hover:bg-sky-dark transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isProcessing ? 'جاري الدفع...' : 'ادفع ٣ دولارات'}
       </button>
 
-      <p className="text-center text-sage text-sm">
+      <p className="text-center text-lavender text-sm">
         الدفع آمن عبر Stripe 🔒
       </p>
     </form>
