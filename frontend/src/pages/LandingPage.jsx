@@ -9,12 +9,12 @@ function LandingPage() {
         <h1 className="font-amiri text-4xl md:text-5xl lg:text-6xl font-bold text-navy leading-tight mb-6">
           قصة نوم لطفلك، فيها هو البطل
         </h1>
-        <p className="text-lg md:text-xl text-sage mb-10 leading-relaxed max-w-xl mx-auto">
+        <p className="text-lg md:text-xl text-lavender mb-10 leading-relaxed max-w-xl mx-auto">
           أدخل اسم طفلك واحصل على قصة عربية جميلة ومخصصة له في دقيقة واحدة
         </p>
         <Link
           to="/create"
-          className="inline-block bg-forest text-cream px-10 py-4 rounded-xl text-xl font-bold hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          className="inline-block bg-sky text-white px-10 py-4 rounded-xl text-xl font-bold hover:bg-sky-dark transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
           ابدأ الآن — ٣ دولار فقط
         </Link>
@@ -26,21 +26,21 @@ function LandingPage() {
           <div className="bg-white rounded-2xl p-8 shadow-md text-center">
             <div className="text-4xl mb-4">🌟</div>
             <h3 className="font-bold text-xl text-navy mb-3">قصة فريدة لطفلك وحده</h3>
-            <p className="text-sage leading-relaxed">
+            <p className="text-lavender leading-relaxed">
               كل قصة مكتوبة خصيصًا لطفلك باسمه وشخصيته المميزة
             </p>
           </div>
           <div className="bg-white rounded-2xl p-8 shadow-md text-center">
             <div className="text-4xl mb-4">📖</div>
             <h3 className="font-bold text-xl text-navy mb-3">بالعربية الفصحى الجميلة</h3>
-            <p className="text-sage leading-relaxed">
+            <p className="text-lavender leading-relaxed">
               لغة عربية سليمة وبسيطة تناسب عمر طفلك وتثري مخزونه اللغوي
             </p>
           </div>
           <div className="bg-white rounded-2xl p-8 shadow-md text-center">
             <div className="text-4xl mb-4">⚡</div>
             <h3 className="font-bold text-xl text-navy mb-3">جاهزة في أقل من دقيقة</h3>
-            <p className="text-sage leading-relaxed">
+            <p className="text-lavender leading-relaxed">
               أجب عن بضعة أسئلة واحصل على قصة نوم مخصصة فورًا
             </p>
           </div>
@@ -52,15 +52,15 @@ function LandingPage() {
         <h2 className="font-amiri text-3xl font-bold text-navy mb-10">كيف تعمل؟</h2>
         <div className="space-y-6">
           <div className="flex items-center gap-4 bg-white rounded-xl p-6 shadow-sm">
-            <span className="bg-forest text-cream w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">١</span>
+            <span className="bg-sky text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">١</span>
             <p className="text-lg text-navy">أدخل اسم طفلك وبعض التفاصيل البسيطة</p>
           </div>
           <div className="flex items-center gap-4 bg-white rounded-xl p-6 shadow-sm">
-            <span className="bg-forest text-cream w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">٢</span>
+            <span className="bg-bubblegum text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">٢</span>
             <p className="text-lg text-navy">ادفع ٣ دولارات فقط</p>
           </div>
           <div className="flex items-center gap-4 bg-white rounded-xl p-6 shadow-sm">
-            <span className="bg-forest text-cream w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">٣</span>
+            <span className="bg-mint text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0">٣</span>
             <p className="text-lg text-navy">احصل على قصة نوم جميلة ومخصصة لطفلك</p>
           </div>
         </div>
@@ -70,11 +70,11 @@ function LandingPage() {
       <section className="px-6 pb-16 text-center">
         <Link
           to="/create"
-          className="inline-block bg-gold text-navy px-10 py-4 rounded-xl text-xl font-bold hover:bg-opacity-90 transition-all shadow-lg"
+          className="inline-block bg-bubblegum text-white px-10 py-4 rounded-xl text-xl font-bold hover:bg-opacity-90 transition-all shadow-lg"
         >
           اصنع القصة الآن
         </Link>
-        <p className="mt-4 text-sage text-sm">لا حاجة لإنشاء حساب</p>
+        <p className="mt-4 text-lavender text-sm">لا حاجة لإنشاء حساب</p>
       </section>
     </div>
   )

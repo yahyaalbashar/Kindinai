@@ -35,7 +35,7 @@ function StoryForm({ onSubmit, isLoading }) {
     onSubmit({ ...formData, child_age: parseInt(formData.child_age) })
   }
 
-  const inputClass = "w-full px-4 py-3 rounded-xl border border-cream-dark bg-white text-navy font-cairo text-lg focus:outline-none focus:ring-2 focus:ring-forest focus:border-transparent"
+  const inputClass = "w-full px-4 py-3 rounded-xl border border-cream-dark bg-white text-navy font-cairo text-lg focus:outline-none focus:ring-2 focus:ring-sky focus:border-transparent"
   const labelClass = "block text-navy font-bold mb-2 text-lg"
 
   return (
@@ -72,7 +72,7 @@ function StoryForm({ onSubmit, isLoading }) {
       <div>
         <label className={labelClass}>الجنس</label>
         <div className="flex gap-4">
-          <label className={`flex-1 text-center py-3 rounded-xl border-2 cursor-pointer transition-all ${formData.child_gender === 'boy' ? 'border-forest bg-forest text-cream' : 'border-cream-dark bg-white text-navy hover:border-sage'}`}>
+          <label className={`flex-1 text-center py-3 rounded-xl border-2 cursor-pointer transition-all ${formData.child_gender === 'boy' ? 'border-sky bg-sky text-white' : 'border-cream-dark bg-white text-navy hover:border-lavender'}`}>
             <input
               type="radio"
               name="child_gender"
@@ -83,7 +83,7 @@ function StoryForm({ onSubmit, isLoading }) {
             />
             <span className="text-lg font-bold">ولد 👦</span>
           </label>
-          <label className={`flex-1 text-center py-3 rounded-xl border-2 cursor-pointer transition-all ${formData.child_gender === 'girl' ? 'border-forest bg-forest text-cream' : 'border-cream-dark bg-white text-navy hover:border-sage'}`}>
+          <label className={`flex-1 text-center py-3 rounded-xl border-2 cursor-pointer transition-all ${formData.child_gender === 'girl' ? 'border-bubblegum bg-bubblegum text-white' : 'border-cream-dark bg-white text-navy hover:border-lavender'}`}>
             <input
               type="radio"
               name="child_gender"
@@ -142,7 +142,7 @@ function StoryForm({ onSubmit, isLoading }) {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-forest text-cream py-4 rounded-xl text-xl font-bold hover:bg-opacity-90 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-sky text-white py-4 rounded-xl text-xl font-bold hover:bg-sky-dark transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? 'جاري التحضير...' : 'متابعة للدفع'}
       </button>

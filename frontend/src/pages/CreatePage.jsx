@@ -69,24 +69,24 @@ function CreatePage() {
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="text-sage hover:text-forest transition-colors mb-4 inline-block">
+          <Link to="/" className="text-lavender hover:text-sky transition-colors mb-4 inline-block">
             ← الرئيسية
           </Link>
           <h1 className="font-amiri text-3xl font-bold text-navy">
             {step === 1 ? 'أخبرنا عن طفلك' : 'أكمل الدفع'}
           </h1>
-          <p className="text-sage mt-2">
+          <p className="text-lavender mt-2">
             {step === 1 ? 'أجب عن هذه الأسئلة البسيطة لنصنع قصة مخصصة' : '٣ دولارات فقط لقصة فريدة'}
           </p>
         </div>
 
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-4 mb-8">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 1 ? 'bg-forest text-cream' : 'bg-cream-dark text-sage'}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 1 ? 'bg-sky text-white' : 'bg-cream-dark text-lavender'}`}>
             ١
           </div>
-          <div className={`w-16 h-1 rounded ${step >= 2 ? 'bg-forest' : 'bg-cream-dark'}`} />
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 2 ? 'bg-forest text-cream' : 'bg-cream-dark text-sage'}`}>
+          <div className={`w-16 h-1 rounded ${step >= 2 ? 'bg-sky' : 'bg-cream-dark'}`} />
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 2 ? 'bg-sky text-white' : 'bg-cream-dark text-lavender'}`}>
             ٢
           </div>
         </div>
@@ -109,8 +109,8 @@ function CreatePage() {
               {/* Order summary */}
               <div className="bg-cream rounded-xl p-4 mb-6">
                 <p className="text-navy font-bold mb-1">ملخص الطلب</p>
-                <p className="text-sage">قصة نوم مخصصة لـ {formData?.child_name}</p>
-                <p className="text-forest font-bold mt-2">المبلغ: ٣.٠٠ دولار</p>
+                <p className="text-lavender">قصة نوم مخصصة لـ {formData?.child_name}</p>
+                <p className="text-sky font-bold mt-2">المبلغ: ٣.٠٠ دولار</p>
               </div>
 
               <Elements
@@ -121,7 +121,7 @@ function CreatePage() {
                   appearance: {
                     theme: 'stripe',
                     variables: {
-                      colorPrimary: '#1B4332',
+                      colorPrimary: '#5BADE5',
                       fontFamily: 'Cairo, sans-serif',
                       borderRadius: '12px',
                     },
@@ -133,7 +133,7 @@ function CreatePage() {
 
               <button
                 onClick={() => setStep(1)}
-                className="w-full mt-4 text-sage hover:text-navy transition-colors text-center py-2"
+                className="w-full mt-4 text-lavender hover:text-navy transition-colors text-center py-2"
               >
                 ← العودة للنموذج
               </button>

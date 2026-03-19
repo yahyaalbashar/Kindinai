@@ -13,7 +13,7 @@ function LoadingAnimation({ childName }) {
           نكتب قصة {childName} الآن...
         </h2>
 
-        <p className="text-sage text-lg mb-8">
+        <p className="text-lavender text-lg mb-8">
           قد يستغرق هذا بضع ثوانٍ
         </p>
 
@@ -22,7 +22,7 @@ function LoadingAnimation({ childName }) {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="w-3 h-3 bg-forest rounded-full animate-bounce"
+              className="w-3 h-3 bg-sky rounded-full animate-bounce"
               style={{ animationDelay: `${i * 0.2}s` }}
             />
           ))}

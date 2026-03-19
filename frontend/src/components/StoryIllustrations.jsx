@@ -25,8 +25,8 @@ function StoryIllustrations({ orderId, illustrations: initialIllustrations, illu
   if (status === 'generating') {
     return (
       <div className="bg-white rounded-xl p-5 shadow-md text-center">
-        <div className="flex items-center justify-center gap-2 text-sage">
-          <span className="w-5 h-5 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center justify-center gap-2 text-lavender">
+          <span className="w-5 h-5 border-2 border-bubblegum border-t-transparent rounded-full animate-spin" />
           <span className="font-bold">جاري إنشاء الرسومات... قد يستغرق بضع دقائق</span>
         </div>
       </div>
@@ -39,7 +39,7 @@ function StoryIllustrations({ orderId, illustrations: initialIllustrations, illu
         <p className="text-red-600 mb-3">{error || 'فشل في إنشاء الرسومات'}</p>
         <button
           onClick={handleGenerate}
-          className="bg-gold text-navy px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition-all"
+          className="bg-bubblegum text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition-all"
         >
           إعادة المحاولة
         </button>
@@ -51,7 +51,7 @@ function StoryIllustrations({ orderId, illustrations: initialIllustrations, illu
     <div className="bg-white rounded-xl p-5 shadow-md text-center">
       <button
         onClick={handleGenerate}
-        className="bg-gold text-navy px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition-all"
+        className="bg-bubblegum text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition-all"
       >
         🎨 أنشئ رسومات للقصة
       </button>

@@ -227,7 +227,7 @@ function StoryPage() {
         <div className="text-center">
           <div className="text-5xl mb-4">😔</div>
           <h2 className="font-amiri text-2xl text-navy font-bold mb-4">{error}</h2>
-          <Link to="/create" className="text-forest hover:underline font-bold">
+          <Link to="/create" className="text-sky hover:underline font-bold">
             حاول مرة أخرى
           </Link>
         </div>
@@ -247,8 +247,8 @@ function StoryPage() {
           <h2 className="font-amiri text-2xl text-navy font-bold mb-4">
             عذرًا، حدث خطأ في إنشاء القصة
           </h2>
-          <p className="text-sage mb-6">يرجى التواصل معنا لاسترداد المبلغ أو إعادة المحاولة</p>
-          <Link to="/create" className="inline-block bg-forest text-cream px-8 py-3 rounded-xl font-bold">
+          <p className="text-lavender mb-6">يرجى التواصل معنا لاسترداد المبلغ أو إعادة المحاولة</p>
+          <Link to="/create" className="inline-block bg-sky text-white px-8 py-3 rounded-xl font-bold">
             حاول مرة أخرى
           </Link>
         </div>
@@ -263,7 +263,7 @@ function StoryPage() {
       <div className="max-w-4xl mx-auto">
         {/* Actions bar */}
         <div className="no-print flex items-center justify-between mb-6">
-          <Link to="/" className="text-sage hover:text-forest transition-colors">
+          <Link to="/" className="text-lavender hover:text-sky transition-colors">
             ← الرئيسية
           </Link>
           <div className="flex gap-3">
@@ -362,8 +362,8 @@ function StoryPage() {
           <div className="print-cover">
             <div className="text-6xl mb-4">{wishIcon}</div>
             <h1 className="font-amiri text-4xl font-bold text-navy">{story.story_title || `قصة ${story.child_name}`}</h1>
-            <p className="font-amiri text-xl text-sage mt-2">{story.child_name}</p>
-            <div className="w-24 h-1 bg-gold mx-auto rounded-full mt-4"></div>
+            <p className="font-amiri text-xl text-lavender mt-2">{story.child_name}</p>
+            <div className="w-24 h-1 bg-bubblegum mx-auto rounded-full mt-4"></div>
             {story.story_moral && (
               <p className="font-amiri text-lg text-navy mt-4 italic">« {story.story_moral} »</p>
             )}
@@ -401,9 +401,9 @@ function StoryPage() {
 
           {/* End */}
           <div className="print-endpage">
-            <div className="w-24 h-1 bg-gold mx-auto rounded-full mb-4"></div>
-            <span className="font-amiri text-gold text-3xl">✨ النهاية ✨</span>
-            <div className="w-24 h-1 bg-gold mx-auto rounded-full mt-4"></div>
+            <div className="w-24 h-1 bg-bubblegum mx-auto rounded-full mb-4"></div>
+            <span className="font-amiri text-bubblegum text-3xl">✨ النهاية ✨</span>
+            <div className="w-24 h-1 bg-bubblegum mx-auto rounded-full mt-4"></div>
           </div>
         </div>
 
@@ -411,7 +411,7 @@ function StoryPage() {
         <div className="no-print text-center mt-8">
           <Link
             to="/create"
-            className="inline-block bg-gold text-navy px-8 py-3 rounded-xl font-bold hover:bg-opacity-90 transition-all shadow-md"
+            className="inline-block bg-bubblegum text-white px-8 py-3 rounded-xl font-bold hover:bg-opacity-90 transition-all shadow-md"
           >
             اصنع قصة لطفل آخر
           </Link>
