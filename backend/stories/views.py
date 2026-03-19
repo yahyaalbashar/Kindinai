@@ -211,6 +211,9 @@ def generate_illustrations_view(request):
 
 @api_view(['POST'])
 def generate_video_view(request):
+    if not os.environ.get('ENABLE_VIDEO_GENERATION', 'False').lower() in ('true', '1', 'yes'):
+        return Response({'error': 'Video generation is currently disabled'}, status=status.HTTP_403_FORBIDDEN)
+
     order_id = request.data.get('order_id')
     if not order_id:
         return Response({'error': 'order_id is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -260,6 +263,13 @@ def generate_video_view(request):
         order.video_status = 'failed'
         order.save()
         return Response({'error': 'فشل في إنشاء الفيديو'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def feature_flags_view(request):
+    return Response({
+        'video_generation': os.environ.get('ENABLE_VIDEO_GENERATION', 'False').lower() in ('true', '1', 'yes'),
+    })
 
 
 @csrf_exempt

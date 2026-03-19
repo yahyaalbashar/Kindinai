@@ -11,12 +11,17 @@ function StoryPage() {
   const [story, setStory] = useState(null)
   const [error, setError] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [featureFlags, setFeatureFlags] = useState({})
   const pollRef = useRef(null)
 
   // Book flip state
   const [currentPage, setCurrentPage] = useState(0)
   const [animatingPage, setAnimatingPage] = useState(null)
   const [animatingDir, setAnimatingDir] = useState(null)
+
+  useEffect(() => {
+    api.get('/api/feature-flags/').then(res => setFeatureFlags(res.data)).catch(() => {})
+  }, [])
 
   useEffect(() => {
     const fetchStory = async () => {
@@ -283,7 +288,7 @@ function StoryPage() {
         </div>
 
         {/* Video Generator */}
-        {hasIllustrations && (
+        {featureFlags.video_generation && hasIllustrations && (
           <div className="no-print mb-6">
             <StoryVideoGenerator
               story={story}
