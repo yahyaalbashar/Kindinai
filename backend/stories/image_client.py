@@ -22,7 +22,7 @@ def generate_illustration(scene_description, order, scene_index):
     prompt = f"{STYLE_PROMPT}. Scene: {scene_description}"
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash-image-preview",
+        model="gemini-2.5-flash-image",
         contents=prompt,
         config=types.GenerateContentConfig(
             response_modalities=["IMAGE"],
