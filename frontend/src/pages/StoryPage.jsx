@@ -191,30 +191,29 @@ function StoryPage() {
     // Content page with optional illustrations
     const hasImages = page.illustrations.length > 0
 
-    return (
-      <div className="book-page-inner content-inner">
-        {hasImages ? (
-          <>
-            <div className="page-illustrations">
-              {page.illustrations.map((ill, idx) => (
-                <img
-                  key={idx}
-                  src={ill.image_url}
-                  alt="رسمة من القصة"
-                  className="page-ill-img"
-                  loading="lazy"
-                />
-              ))}
-            </div>
-            <div className="page-text">
-              <p className="font-amiri text-content">{page.text}</p>
-            </div>
-          </>
-        ) : (
-          <div className="page-text-full">
+    if (hasImages) {
+      // Comic-book style: full background image + cloud text overlay
+      return (
+        <div className="illustrated-page">
+          <img
+            src={page.illustrations[0].image_url}
+            alt="رسمة من القصة"
+            className="page-bg-img"
+            loading="lazy"
+          />
+          <div className="text-cloud">
             <p className="font-amiri text-content">{page.text}</p>
           </div>
-        )}
+          <div className="page-number">{page.pageNumber}</div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="book-page-inner content-inner">
+        <div className="page-text-full">
+          <p className="font-amiri text-content">{page.text}</p>
+        </div>
         <div className="page-number">{page.pageNumber}</div>
       </div>
     )
