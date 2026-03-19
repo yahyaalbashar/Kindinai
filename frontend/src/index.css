@@ -203,6 +203,54 @@ body {
   transform: translateX(-50%);
 }
 
+/* ── Cover with illustration background ── */
+
+.cover-illustrated {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cover-cloud {
+  position: absolute;
+  inset: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 28px;
+  padding: 2rem 1.5rem;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.12),
+    0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.cover-cloud .cover-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.cover-cloud .cover-title {
+  font-size: 1.8rem;
+  color: #2D2654;
+  text-shadow: none;
+}
+
+.cover-cloud .cover-divider {
+  background: #F4A7BB;
+}
+
+.cover-cloud .cover-subtitle {
+  color: #5BADE5;
+}
+
+.cover-cloud .cover-hint {
+  color: #9B8BBF;
+}
+
 /* ── End page ── */
 
 .end-inner {
@@ -444,6 +492,19 @@ body {
   .text-cloud .text-content {
     font-size: 0.9rem;
     line-height: 1.75;
+  }
+
+  .cover-cloud {
+    inset: 1rem;
+    padding: 1.25rem 1rem;
+  }
+
+  .cover-cloud .cover-icon {
+    font-size: 2.5rem;
+  }
+
+  .cover-cloud .cover-title {
+    font-size: 1.4rem;
   }
 
   .book-page-inner {

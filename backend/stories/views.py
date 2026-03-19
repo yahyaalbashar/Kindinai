@@ -103,6 +103,27 @@ def generate_story_view(request):
         order.save()
         return Response({'error': 'فشل في إنشاء القصة'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # Auto-generate illustrations right after story text
+    order.illustrations_status = 'generating'
+    order.save()
+    try:
+        character_description = generate_character_description(order)
+        scene_descriptions = extract_scene_descriptions(order.story_text, order)
+        illustrations = generate_story_illustrations(order, scene_descriptions, character_description)
+        order.illustrations_status = 'completed'
+
+        # Pick a random illustration as the book cover
+        if illustrations:
+            import random
+            cover = random.choice(illustrations)
+            order.cover_illustration = cover
+
+        order.save()
+    except Exception as e:
+        logger.error(f"Auto illustration generation failed for order {order.id}: {e}")
+        order.illustrations_status = 'failed'
+        order.save()
+
     return Response({
         'order_id': str(order.id),
         'status': order.status,
