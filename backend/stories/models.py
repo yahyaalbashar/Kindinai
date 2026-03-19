@@ -37,6 +37,7 @@ class StoryOrder(models.Model):
     favorite_animal = models.CharField(max_length=100)
     wish = models.CharField(max_length=50, choices=WISH_CHOICES)
     theme = models.CharField(max_length=50, choices=THEME_CHOICES)
+    child_photo = models.ImageField(upload_to='child_photos/', blank=True)
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True)
     story_title = models.CharField(max_length=200, blank=True)
     story_moral = models.CharField(max_length=300, blank=True)
