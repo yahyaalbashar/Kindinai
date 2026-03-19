@@ -56,6 +56,12 @@ class StoryOrder(models.Model):
         default='pending',
     )
 
+    video_status = models.CharField(
+        max_length=20,
+        choices=[('pending', 'Pending'), ('generating', 'Generating'), ('completed', 'Completed'), ('failed', 'Failed')],
+        default='pending',
+    )
+
     class Meta:
         ordering = ['-created_at']
 
@@ -76,3 +82,17 @@ class StoryIllustration(models.Model):
 
     def __str__(self):
         return f"Illustration {self.scene_index} (para {self.paragraph_index}) for {self.story_id}"
+
+
+class StoryVideoClip(models.Model):
+    story = models.ForeignKey(StoryOrder, on_delete=models.CASCADE, related_name='video_clips')
+    paragraph_index = models.IntegerField()
+    scene_description = models.TextField()
+    video = models.FileField(upload_to='story_videos/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['paragraph_index']
+
+    def __str__(self):
+        return f"Video clip {self.paragraph_index} for {self.story_id}"
