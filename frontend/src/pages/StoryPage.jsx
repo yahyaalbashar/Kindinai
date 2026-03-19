@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../api'
 import LoadingAnimation from '../components/LoadingAnimation'
+import AudioPlayer from '../components/AudioPlayer'
 import StoryIllustrations from '../components/StoryIllustrations'
 
 function StoryPage() {
@@ -238,6 +239,11 @@ function StoryPage() {
               🖨️ طباعة
             </button>
           </div>
+        </div>
+
+        {/* Audio Player */}
+        <div className="no-print mb-6">
+          <AudioPlayer orderId={id} audioUrl={story.audio_url} audioStatus={story.audio_status} />
         </div>
 
         {/* Generate illustrations button */}
