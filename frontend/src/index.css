@@ -10,18 +10,142 @@ body {
   color: #1B2A4A;
 }
 
+/* ── Book layout ── */
+
+.story-book {
+  direction: rtl;
+}
+
+.story-cover {
+  background: linear-gradient(135deg, #FFF8F0 0%, #F5EBD8 100%);
+}
+
+.story-endpage {
+  background: linear-gradient(135deg, #FFF8F0 0%, #F5EBD8 100%);
+}
+
+.story-page {
+  padding: 2rem;
+}
+
+/* Spread layout: text on left, image on right (visually) */
+.story-spread {
+  display: flex;
+  flex-direction: row-reverse; /* RTL: reverses so text appears on left, image on right */
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.story-text-column {
+  flex: 1;
+  min-width: 0;
+}
+
+.story-image-column {
+  flex: 0 0 40%;
+  max-width: 40%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.story-illustration img {
+  border: 4px solid #F5EBD8;
+}
+
+.story-text-full {
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 768px) {
+  .story-spread {
+    flex-direction: column;
+  }
+
+  .story-image-column {
+    flex: none;
+    max-width: 100%;
+    width: 100%;
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+
+  .story-illustration {
+    flex: 1;
+  }
+
+  .story-text-full {
+    max-width: 100%;
+  }
+
+  .story-page {
+    padding: 1.5rem;
+  }
+}
+
+/* ── Print styles ── */
+
 @media print {
   body {
     background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
+
   .no-print {
     display: none !important;
   }
-  .print-only {
+
+  .story-book {
     box-shadow: none !important;
-    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  .story-cover {
+    page-break-after: always;
+    background: linear-gradient(135deg, #FFF8F0 0%, #F5EBD8 100%) !important;
+  }
+
+  .story-page {
+    padding: 1.5cm 2cm;
+    page-break-inside: avoid;
+  }
+
+  .story-page-illustrated {
+    page-break-inside: avoid;
+  }
+
+  .story-spread {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 1.5cm;
+  }
+
+  .story-image-column {
+    flex: 0 0 38%;
+    max-width: 38%;
+  }
+
+  .story-illustration img {
+    border: 3px solid #F5EBD8 !important;
+    border-radius: 0.5rem;
+  }
+
+  .story-endpage {
+    page-break-before: always;
+    background: linear-gradient(135deg, #FFF8F0 0%, #F5EBD8 100%) !important;
+  }
+
+  /* Ensure images print */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
   }
 }
+
+/* ── Animations ── */
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }

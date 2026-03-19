@@ -42,16 +42,20 @@ def generate_illustration(scene_description, order, scene_index):
 
 
 def generate_story_illustrations(order, scene_descriptions):
-    """Generate illustrations for all scenes and save them."""
+    """Generate illustrations for all scenes and save them.
+
+    scene_descriptions: list of (paragraph_index, description) tuples
+    """
     from .models import StoryIllustration
 
     illustrations = []
-    for i, scene in enumerate(scene_descriptions):
+    for i, (para_index, scene) in enumerate(scene_descriptions):
         try:
             filename, content = generate_illustration(scene, order, i)
             illustration = StoryIllustration(
                 story=order,
                 scene_index=i,
+                paragraph_index=para_index,
                 scene_description=scene,
             )
             illustration.image.save(filename, content, save=False)

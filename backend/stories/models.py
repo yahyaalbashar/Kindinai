@@ -64,12 +64,13 @@ class StoryOrder(models.Model):
 class StoryIllustration(models.Model):
     story = models.ForeignKey(StoryOrder, on_delete=models.CASCADE, related_name='illustrations')
     scene_index = models.IntegerField()
+    paragraph_index = models.IntegerField(default=0)
     scene_description = models.TextField()
     image = models.ImageField(upload_to='story_illustrations/')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['scene_index']
+        ordering = ['paragraph_index', 'scene_index']
 
     def __str__(self):
-        return f"Illustration {self.scene_index} for {self.story_id}"
+        return f"Illustration {self.scene_index} (para {self.paragraph_index}) for {self.story_id}"

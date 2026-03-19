@@ -18,7 +18,7 @@ class StoryIllustrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StoryIllustration
-        fields = ['scene_index', 'image_url']
+        fields = ['scene_index', 'paragraph_index', 'image_url']
 
     def get_image_url(self, obj):
         if obj.image:

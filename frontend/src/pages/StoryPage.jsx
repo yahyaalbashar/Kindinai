@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../api'
 import LoadingAnimation from '../components/LoadingAnimation'
-import AudioPlayer from '../components/AudioPlayer'
 import StoryIllustrations from '../components/StoryIllustrations'
 
 function StoryPage() {
@@ -32,6 +31,22 @@ function StoryPage() {
 
     return () => clearInterval(pollRef.current)
   }, [id])
+
+  // Split story into paragraphs and group illustrations by paragraph
+  const { paragraphs, illustrationsByParagraph } = useMemo(() => {
+    if (!story?.story_text) return { paragraphs: [], illustrationsByParagraph: {} }
+
+    const paras = story.story_text.split('\n\n').filter(p => p.trim())
+    const illMap = {}
+    if (story.illustrations?.length) {
+      for (const ill of story.illustrations) {
+        const idx = ill.paragraph_index ?? 0
+        if (!illMap[idx]) illMap[idx] = []
+        illMap[idx].push(ill)
+      }
+    }
+    return { paragraphs: paras, illustrationsByParagraph: illMap }
+  }, [story?.story_text, story?.illustrations])
 
   const handleCopy = async () => {
     if (story?.story_text) {
@@ -80,9 +95,11 @@ function StoryPage() {
     )
   }
 
+  const hasIllustrations = story.illustrations_status === 'completed' && story.illustrations?.length > 0
+
   return (
     <div className="min-h-screen py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Actions bar - hidden on print */}
         <div className="no-print flex items-center justify-between mb-6">
           <Link to="/" className="text-sage hover:text-forest transition-colors">
@@ -104,38 +121,78 @@ function StoryPage() {
           </div>
         </div>
 
-        {/* Audio Player - disabled until better TTS provider is integrated */}
-        {/* <div className="no-print mb-6">
-          <AudioPlayer orderId={id} audioUrl={story.audio_url} audioStatus={story.audio_status} />
-        </div> */}
+        {/* Illustration generate button - hidden on print */}
+        {!hasIllustrations && (
+          <div className="no-print mb-6">
+            <StoryIllustrations
+              orderId={id}
+              illustrations={story.illustrations}
+              illustrationsStatus={story.illustrations_status}
+            />
+          </div>
+        )}
 
-        {/* Illustrations */}
-        <div className="no-print mb-6">
-          <StoryIllustrations
-            orderId={id}
-            illustrations={story.illustrations}
-            illustrationsStatus={story.illustrations_status}
-          />
-        </div>
-
-        {/* Story card */}
-        <div className="bg-white rounded-2xl p-8 md:p-12 shadow-lg print-only">
-          {/* Story title */}
-          <div className="text-center mb-8 pb-6 border-b border-cream-dark">
-            <div className="text-4xl mb-3">📖</div>
-            <h1 className="font-amiri text-4xl font-bold text-navy">
+        {/* Book container */}
+        <div className="story-book bg-white rounded-2xl shadow-lg overflow-hidden">
+          {/* Book cover / title page */}
+          <div className="story-page story-cover text-center py-16 px-8 border-b-2 border-cream-dark">
+            <div className="text-6xl mb-6">📖</div>
+            <h1 className="font-amiri text-4xl md:text-5xl font-bold text-navy mb-4">
               قصة {story.child_name}
             </h1>
+            <div className="w-24 h-1 bg-gold mx-auto rounded-full"></div>
           </div>
 
-          {/* Story text */}
-          <div className="font-amiri text-xl md:text-2xl leading-loose text-navy whitespace-pre-line">
-            {story.story_text}
-          </div>
+          {/* Story paragraphs with illustrations */}
+          {paragraphs.map((paragraph, index) => {
+            const paraIllustrations = illustrationsByParagraph[index] || []
+            const hasParagraphImages = paraIllustrations.length > 0
 
-          {/* Decorative footer */}
-          <div className="text-center mt-10 pt-6 border-t border-cream-dark">
-            <span className="text-gold text-2xl">✨ النهاية ✨</span>
+            return (
+              <div
+                key={index}
+                className={`story-page border-b border-cream-dark last:border-b-0 ${
+                  hasParagraphImages ? 'story-page-illustrated' : ''
+                }`}
+              >
+                {hasParagraphImages ? (
+                  <div className="story-spread">
+                    {/* Text side (left in LTR visual, which is left on screen) */}
+                    <div className="story-text-column">
+                      <p className="font-amiri text-xl md:text-2xl leading-loose text-navy whitespace-pre-line">
+                        {paragraph.trim()}
+                      </p>
+                    </div>
+                    {/* Image side (right) */}
+                    <div className="story-image-column">
+                      {paraIllustrations.map((ill, imgIdx) => (
+                        <div key={imgIdx} className="story-illustration">
+                          <img
+                            src={ill.image_url}
+                            alt={`رسمة من القصة`}
+                            className="w-full h-auto rounded-xl shadow-md"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="story-text-full">
+                    <p className="font-amiri text-xl md:text-2xl leading-loose text-navy whitespace-pre-line">
+                      {paragraph.trim()}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+
+          {/* Decorative footer / back cover */}
+          <div className="story-page story-endpage text-center py-12">
+            <div className="w-24 h-1 bg-gold mx-auto rounded-full mb-6"></div>
+            <span className="font-amiri text-gold text-3xl">✨ النهاية ✨</span>
+            <div className="w-24 h-1 bg-gold mx-auto rounded-full mt-6"></div>
           </div>
         </div>
 
