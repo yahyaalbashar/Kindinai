@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import api from '../api'
 import LoadingAnimation from '../components/LoadingAnimation'
 import AudioPlayer from '../components/AudioPlayer'
+import StoryIllustrations from '../components/StoryIllustrations'
 
 function StoryPage() {
   const { id } = useParams()
@@ -107,6 +108,15 @@ function StoryPage() {
         {/* <div className="no-print mb-6">
           <AudioPlayer orderId={id} audioUrl={story.audio_url} audioStatus={story.audio_status} />
         </div> */}
+
+        {/* Illustrations */}
+        <div className="no-print mb-6">
+          <StoryIllustrations
+            orderId={id}
+            illustrations={story.illustrations}
+            illustrationsStatus={story.illustrations_status}
+          />
+        </div>
 
         {/* Story card */}
         <div className="bg-white rounded-2xl p-8 md:p-12 shadow-lg print-only">

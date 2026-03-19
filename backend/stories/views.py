@@ -11,8 +11,9 @@ from rest_framework import status
 
 from .models import StoryOrder
 from .serializers import StoryOrderCreateSerializer, StoryOrderOutputSerializer
-from .claude_client import generate_story
+from .claude_client import generate_story, extract_scene_descriptions
 from .tts_client import generate_audio
+from .image_client import generate_story_illustrations
 
 logger = logging.getLogger(__name__)
 
@@ -152,6 +153,57 @@ def generate_audio_view(request):
         order.audio_status = 'failed'
         order.save()
         return Response({'error': 'فشل في إنشاء الصوت'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def generate_illustrations_view(request):
+    order_id = request.data.get('order_id')
+    if not order_id:
+        return Response({'error': 'order_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        order = StoryOrder.objects.get(id=order_id)
+    except StoryOrder.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if order.status != StoryOrder.Status.COMPLETED or not order.story_text:
+        return Response({'error': 'Story not ready'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if order.illustrations_status == 'completed' and order.illustrations.exists():
+        from .serializers import StoryIllustrationSerializer
+        illustrations = StoryIllustrationSerializer(
+            order.illustrations.all(), many=True, context={'request': request}
+        ).data
+        return Response({
+            'order_id': str(order.id),
+            'illustrations_status': 'completed',
+            'illustrations': illustrations,
+        })
+
+    order.illustrations_status = 'generating'
+    order.save()
+
+    try:
+        scene_descriptions = extract_scene_descriptions(order.story_text, order)
+        illustrations = generate_story_illustrations(order, scene_descriptions)
+        order.illustrations_status = 'completed'
+        order.save()
+
+        from .serializers import StoryIllustrationSerializer
+        illustrations_data = StoryIllustrationSerializer(
+            illustrations, many=True, context={'request': request}
+        ).data
+
+        return Response({
+            'order_id': str(order.id),
+            'illustrations_status': 'completed',
+            'illustrations': illustrations_data,
+        })
+    except Exception as e:
+        logger.error(f"Illustrations generation failed for order {order.id}: {e}")
+        order.illustrations_status = 'failed'
+        order.save()
+        return Response({'error': 'فشل في إنشاء الرسومات'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @csrf_exempt

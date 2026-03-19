@@ -6,5 +6,6 @@ urlpatterns = [
     path('generate-story/', views.generate_story_view),
     path('story/<uuid:order_id>/', views.get_story),
     path('generate-audio/', views.generate_audio_view),
+    path('generate-illustrations/', views.generate_illustrations_view),
     path('webhook/stripe/', views.stripe_webhook),
 ]
