@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../api'
 import LoadingAnimation from '../components/LoadingAnimation'
+import AudioPlayer from '../components/AudioPlayer'
 
 function StoryPage() {
   const { id } = useParams()
@@ -100,6 +101,11 @@ function StoryPage() {
               🖨️ طباعة
             </button>
           </div>
+        </div>
+
+        {/* Audio Player - hidden on print */}
+        <div className="no-print mb-6">
+          <AudioPlayer orderId={id} audioUrl={story.audio_url} audioStatus={story.audio_status} />
         </div>
 
         {/* Story card */}

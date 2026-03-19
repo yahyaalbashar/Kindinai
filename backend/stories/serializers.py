@@ -16,4 +16,14 @@ class StoryOrderCreateSerializer(serializers.ModelSerializer):
 class StoryOrderOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoryOrder
-        fields = ['id', 'child_name', 'child_age', 'story_text', 'status', 'created_at']
+        fields = ['id', 'child_name', 'child_age', 'story_text', 'status', 'audio_status', 'audio_url', 'created_at']
+
+    audio_url = serializers.SerializerMethodField()
+
+    def get_audio_url(self, obj):
+        if obj.audio_file:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.audio_file.url)
+            return obj.audio_file.url
+        return None
